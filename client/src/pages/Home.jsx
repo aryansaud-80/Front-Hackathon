@@ -6,7 +6,6 @@ import NewsletterSubscription from './NewsLetter.jsx';
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext.jsx';
 import Loader from '../components/Loader.jsx';
-// import HackathonPage from './Description.jsx';
 
 const Home = () => {
   const { hackathon, loading } = useContext(AppContext);
@@ -18,7 +17,7 @@ const Home = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className='bg-gray-900  py-10 flex flex-col items-center justify-between min-h-screen'>
+        <div className='bg-gray-900 py-10 flex flex-col items-center justify-between min-h-screen'>
           <div className='container mx-auto text-center'>
             <h1 className='text-3xl text-gray-300 font-bold mb-6'>
               Recent Hackathons
@@ -30,7 +29,10 @@ const Home = () => {
               {hackathon
                 .slice(0, hackathon.length > 4 ? 4 : hackathon.length)
                 .map((data, idx) => (
-                  <Card key={idx} data={data} idx={idx} />
+                  <div className='flex flex-col h-full' key={idx}>
+                    {/* Ensure the card fills the height of its container */}
+                    <Card key={idx} data={data} idx={idx} />
+                  </div>
                 ))}
             </div>
 
@@ -45,7 +47,7 @@ const Home = () => {
           </div>
         </div>
       )}
-      {/* <ChatBot /> */}
+
       <TestimonialSlider />
       <NewsletterSubscription />
     </>
