@@ -17,7 +17,7 @@ const Home = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className='bg-gray-900 py-16 flex flex-col items-center justify-between min-h-screen'>
+        <div className='bg-gray-900 py-16 flex flex-col items-center justify-between min-h-[60vh]'>
           {/* Heading Section */}
           <div className='container mx-auto text-center mb-12'>
             <h1 className='text-4xl text-gray-300 font-bold mb-6'>
