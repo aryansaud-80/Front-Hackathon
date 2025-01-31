@@ -17,26 +17,31 @@ const Home = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className='bg-gray-900 py-10 flex flex-col items-center justify-between min-h-screen'>
-          <div className='container mx-auto text-center'>
-            <h1 className='text-3xl text-gray-300 font-bold mb-6'>
+        <div className='bg-gray-900 py-16 flex flex-col items-center justify-between min-h-screen'>
+          {/* Heading Section */}
+          <div className='container mx-auto text-center mb-12'>
+            <h1 className='text-4xl text-gray-300 font-bold mb-6'>
               Recent Hackathons
             </h1>
+            <p className='text-lg text-gray-400'>
+              Join the most exciting hackathons and showcase your skills.
+            </p>
           </div>
 
+          {/* Cards Section */}
           <div className='container mx-auto px-4'>
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center'>
               {hackathon
                 .slice(0, hackathon.length > 4 ? 4 : hackathon.length)
                 .map((data, idx) => (
                   <div className='flex flex-col h-full' key={idx}>
-                    {/* Ensure the card fills the height of its container */}
-                    <Card key={idx} data={data} idx={idx} />
+                    <Card data={data} idx={idx} />
                   </div>
                 ))}
             </div>
 
-            <div className='flex justify-center mt-10'>
+            {/* More Button */}
+            <div className='flex justify-center mt-12'>
               <button
                 className='bg-purple-500 py-3 px-8 text-lg text-white font-bold rounded-md hover:bg-purple-600 transition duration-200'
                 onClick={() => navigate('/hackathon')}
@@ -48,6 +53,7 @@ const Home = () => {
         </div>
       )}
 
+      {/* Other Sections */}
       <TestimonialSlider />
       <NewsletterSubscription />
     </>
