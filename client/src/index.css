@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@100..900&display=swap');
+
+@import 'tailwindcss';
+
+:root {
+  --logo-font: 'Bebas Neue', sans-serif;
+  --primary-font: 'Outfit', sans-serif;
+}
+
+button{
+  cursor: pointer;
+}
+
+.loader {
+  width: 100px;
+  aspect-ratio: 1;
+  color: #f03355;
+  --_c: no-repeat radial-gradient(farthest-side, currentColor 92%, #0000);
+  background: var(--_c) 50% 0 /12px 12px, var(--_c) 50% 100%/12px 12px,
+    var(--_c) 100% 50%/12px 12px, var(--_c) 0 50%/12px 12px,
+    var(--_c) 50% 50%/12px 12px,
+    conic-gradient(from 90deg at 4px 4px, #0000 90deg, currentColor 0) -4px -4px /
+      calc(50% + 2px) calc(50% + 2px);
+  animation: l8 1s infinite linear;
+}
+@keyframes l8 {
+  to {
+    transform: rotate(0.5turn);
+  }
+}
+
+/* body {
+  font-family: var(--primary-font);;
+} */
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
