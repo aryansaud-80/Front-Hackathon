@@ -18,7 +18,7 @@ const Home = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className='bg-gray-900 min-h-screen py-10'>
+        <div className='bg-gray-900 min-h-[600px] py-10'>
           <div className='container mx-auto text-center'>
             <h1 className='text-3xl text-gray-300 font-bold mb-6'>
               Recent Hackathons
