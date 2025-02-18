@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Readme</title>
 </head>
 <body>
    <div>
@@ -11,10 +10,10 @@
    </div> 
    <div>
     PORT = 5000
-SECRET_STRING = jfakmf
-EMAIL =yogeshshah2063@gmail.com
-PASSWORD = 123456
-DB_URL = mongodb+srv://admin:admin@cluster0.ygcln.mongodb.net/
+    SECRET_STRING = jfakmf
+    EMAIL =yogeshshah2063@gmail.com
+    PASSWORD = 123456
+    DB_URL = mongodb+srv://admin:admin@cluster0.ygcln.mongodb.net/
    </div>
 </body>
 </html>
