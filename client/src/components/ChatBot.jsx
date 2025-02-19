@@ -1,76 +1,133 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { AiOutlineSend, AiOutlineClose } from "react-icons/ai";
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import ChatIcon from "./ChatIcon";
+import useStore from "../context/ChatStore.js";
 
-const ChatBot = ({ isOpen, onClose }) => {
-  const [messages, setMessages] = useState([{ type: "bot", text: "Hello! How can I assist you today?" }]);
+const Chatbot = () => {
   const [input, setInput] = useState("");
-  const chatContainerRef = useRef(null);
+  const [messages, setMessages] = useState([
+    { role: "bot", content: "Hey there! How can I help you?" }, // Default bot message
+  ]);
+  const [isProcessing, setIsProcessing] = useState(false); // To track the processing state
 
+  const messagesEndRef = useRef(null); // Reference for auto-scrolling
+
+  // Auto-scroll to the bottom whenever new messages are added
   useEffect(() => {
-    chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    
-    const newMessages = [...messages, { type: "user", text: input }];
-    setMessages(newMessages);
-    setInput("");
+  const sendMessage = async () => {
+    if (!input) return;
 
-    setTimeout(() => {
-      setMessages([...newMessages, { type: "bot", text: "I'm still learning, but I'll try my best to help!" }]);
-    }, 1000);
+    const userMessage = { role: "user", content: input };
+    setMessages((prev) => [...prev, userMessage]);
+
+    // Set isProcessing to true when sending a request
+    setIsProcessing(true);
+
+    try {
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=AIzaSyDzJgO3Tas9zcgqKILIC1GwPMlqhdk-zpA`,
+        {
+          contents: [{ role: "user", parts: [{ text: input }] }],
+        }
+      );
+
+      const botMessage = {
+        role: "bot",
+        content:
+          response.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          "Sorry, I couldn't understand that.",
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Error:", error);
+      setMessages((prev) => [
+        ...prev,
+        { role: "bot", content: `Error: ${error.message || "Unknown error"}` },
+      ]);
+    } finally {
+      // Set isProcessing to false after the response is received
+      setIsProcessing(false);
+    }
+
+    setInput(""); // Clear the input field after sending the message
   };
 
-  if (!isOpen) return null;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await sendMessage();
+  };
+
+  const { chatBotStatus, setChatBotStatus } = useStore();
+  const handleClick = (e) => {
+    e.preventDefault();
+    setChatBotStatus(false); // Update the status to hide the chatbot
+  };
+
+  if (!chatBotStatus) return null; // If chatBotStatus is false, don't render the chatbot
 
   return (
-    <motion.div 
-      initial={{ y: 50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="fixed bottom-20 right-5 bg-gray-900 w-80 sm:w-96 h-[450px] rounded-2xl shadow-lg flex flex-col text-white z-50 "
+    <form
+      onSubmit={handleSubmit}
+      className="p-6 max-w-sm mx-auto rounded-lg shadow-lg relative bg-gray-950"
     >
-      {/* Chat Header */}
-      <div className="bg-gray-800 p-4 flex justify-between items-center rounded-t-2xl ">
-        <h2 className="text-lg font-bold">AI Chatbot</h2>
-        <button onClick={onClose} className="text-purple-500 hover:text-purple-400">
-          <AiOutlineClose size={24} />
-        </button>
+      <div className="flex justify-between items-center mb-4">
+        <ChatIcon />
+        <h2
+          className="text-xl font-semibold text-white cursor-pointer"
+          onClick={handleClick}
+        >
+          X
+        </h2>
       </div>
-
-      {/* Chat Messages */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div
+        className="p-4 h-80 overflow-y-auto rounded-lg bg-gray-800 shadow-sm backdrop-blur-md bg-opacity-40"
+        style={{ scrollBehavior: "smooth" }}
+      >
         {messages.map((msg, index) => (
-          <motion.div
+          <p
             key={index}
-            className={`max-w-xs p-3 rounded-lg ${msg.type === "user" ? "bg-purple-500 ml-auto" : "bg-gray-700 mr-auto"}`}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            className={`mb-2 py-2 px-4 rounded-md ${
+              msg.role === "user"
+                ? "bg-blue-100 text-blue-700 self-end"
+                : "bg-indigo-500 text-white"
+            }`}
           >
-            {msg.text}
-          </motion.div>
+            <strong>{msg.role === "user" ? "You: " : "Bot: "}</strong>
+            {msg.content}
+          </p>
         ))}
+        {isProcessing && (
+          <p className="mb-2 py-2 px-4 text-left bg-indigo-500 text-white">
+            Bot: Thinking...
+          </p>
+        )}
+        {/* The reference for auto-scroll */}
+        <div ref={messagesEndRef} />
       </div>
-
-      {/* Input Field */}
-      <div className="bg-gray-800 p-3 flex items-center rounded-b-2xl">
+      <div className="flex items-center mt-4">
         <input
           type="text"
-          className="flex-1 p-2 rounded-l-lg bg-gray-700 text-white outline-none"
-          placeholder="Type a message..."
+          className="border p-2 w-full rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSubmit()}
+          placeholder="Type your message..."
+          disabled={isProcessing} // Disable input when processing
         />
-        <button onClick={sendMessage} className="ml-2 bg-purple-500 p-2 rounded-r-lg hover:bg-purple-600">
-          <AiOutlineSend size={24} />
+        <button
+          type="submit"
+          className="ml-3 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 disabled:bg-blue-200"
+          disabled={isProcessing} // Disable button when processing
+        >
+          Send
         </button>
       </div>
-    </motion.div>
+    </form>
   );
 };
 
-export default ChatBot;
+export default Chatbot;

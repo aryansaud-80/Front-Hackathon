@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import ChatBot from './ChatBot';
-import { motion } from 'framer-motion';
-import { AiFillMessage } from "react-icons/ai";
+import React from "react";
+import ChatBot from "./ChatBot";
+import useStore from "../context/ChatStore.js";
 
 const Button = () => {
-  const [chatOpen, setChatOpen] = useState(false);
+  const { setChatBotStatus, chatBotStatus } = useStore();
+
+  const handleToggle = () => {
+    setChatBotStatus(!chatBotStatus); // Toggle the chat bot status
+  };
 
   return (
-    <div className='flex items-center justify-center bg-gray-900 text-white '>
-      {/* Chatbox Button */}
-      <motion.button
-        onClick={() => setChatOpen(true)}
-        className='fixed bottom-5 right-5 bg-purple-500 text-white p-3 rounded-full shadow-lg text-lg font-semibold hover:bg-purple-600 z-50 cursor-pointer'
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <AiFillMessage className='text-2xl' />
-      </motion.button>
-
+    <div className="flex items-center flex-col justify-center bg-none text-white fixed bottom-4 z-20 right-14">
+      {chatBotStatus && <ChatBot />} {/* Conditionally render ChatBot */}
+      {!chatBotStatus && (
+        <button
+          className="bg-indigo-300 rounded-full px-4 py-2"
+          onClick={handleToggle}
+        >
+          Chat
+        </button>
+      )}
       {/* ChatBot Component */}
-      <ChatBot isOpen={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   );
 };

@@ -9,7 +9,7 @@ import './instrument.js'; // Setup Sentry for error handling
 import adminHackathon from './routes/admin/adminHackathon.routes.js';
 import userHackathon from './routes/user/userHackathon.routes.js';
 import cors from 'cors';
-import { handleChatbotRequest } from './controllers/chatbotController.js';
+
 import { clerkMiddleware } from '@clerk/express';
 import { webhookController } from './controllers/user.webhook.js';
 
@@ -50,9 +50,6 @@ app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/user/auth', userAuthRoutes);
 app.use('/api/admin/hackathon', adminHackathon);
 app.use('/api/user/hackathon', userHackathon);
-
-app.post('/chat', handleChatbotRequest);
-
 connectDB();
 
 const port = process.env.PORT || 8000;
